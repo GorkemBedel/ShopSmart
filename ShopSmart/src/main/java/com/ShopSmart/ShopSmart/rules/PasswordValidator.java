@@ -1,6 +1,7 @@
 package com.ShopSmart.ShopSmart.rules;
 
 import com.ShopSmart.ShopSmart.exceptions.EmptyPasswordException;
+import com.ShopSmart.ShopSmart.exceptions.NonValidPasswordException;
 import com.ShopSmart.ShopSmart.exceptions.UsernameNotUniqueException;
 import com.ShopSmart.ShopSmart.model.Admin;
 import com.ShopSmart.ShopSmart.model.Merchant;
@@ -17,6 +18,8 @@ public class PasswordValidator {
 
         if (password.isEmpty()) {
             throw new EmptyPasswordException("Password can not be empty!");
+        } else if (password.length() < 8) {
+            throw new NonValidPasswordException("Your password is not valid. It's lenght should be minimum 8");
         }
     }
 }

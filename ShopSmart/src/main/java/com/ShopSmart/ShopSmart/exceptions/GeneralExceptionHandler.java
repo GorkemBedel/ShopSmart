@@ -24,4 +24,9 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NonValidPasswordException.class)
+    public ResponseEntity<?> NonValidPasswordExceptionHandler(NonValidPasswordException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.ShopSmart.ShopSmart.controller;
 
+import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
+import com.ShopSmart.ShopSmart.model.Admin;
 import com.ShopSmart.ShopSmart.model.Merchant;
 import com.ShopSmart.ShopSmart.model.User;
 import com.ShopSmart.ShopSmart.service.AdminService;
@@ -24,9 +26,16 @@ public class AdminController {
         this.merchantService = merchantService;
     }
 
+
+
     @GetMapping("/test")
     public String helloWorldPublic(){
         return "Hello world from Admin Panel";
+    }
+
+    @PostMapping("/createAdmin")
+    public Admin createUser(@RequestBody CreateUserRequest request){
+        return adminService.createAdmin(request);
     }
 
     @GetMapping("/GetUsers")

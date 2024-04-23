@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/ShopSmart")
+@RequestMapping("/ShopSmart/User")
 public class UserController {
 
     private final UserService userService;

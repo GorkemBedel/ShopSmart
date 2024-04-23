@@ -8,6 +8,7 @@ import com.ShopSmart.ShopSmart.model.User;
 import com.ShopSmart.ShopSmart.repository.AdminRepository;
 import com.ShopSmart.ShopSmart.repository.MerchantRepository;
 import com.ShopSmart.ShopSmart.repository.UserRepository;
+import com.ShopSmart.ShopSmart.rules.PasswordValidator;
 import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,22 +25,30 @@ public class AdminService {
     private final MerchantRepository merchantRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UniqueUsernameValidator uniqueUsernameValidator;
+    private final PasswordValidator passwordValidator;
 
 
-    public AdminService(AdminRepository adminRepository, UserRepository userRepository, MerchantRepository merchantRepository,
-                        BCryptPasswordEncoder bCryptPasswordEncoder, UniqueUsernameValidator uniqueUsernameValidator) {
+    public AdminService(AdminRepository adminRepository, UserRepository userRepository
+                        , MerchantRepository merchantRepository
+                        , BCryptPasswordEncoder bCryptPasswordEncoder, UniqueUsernameValidator uniqueUsernameValidator
+                        , PasswordValidator passwordValidator) {
         this.adminRepository = adminRepository;
         this.userRepository = userRepository;
         this.merchantRepository = merchantRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.uniqueUsernameValidator = uniqueUsernameValidator;
+        this.passwordValidator = passwordValidator;
     }
 
     public Admin createAdmin(CreateUserRequest createUserRequest){
 
-        //Checking if that username is exists in database
+        //Checking if that username is exist in database
         String username = createUserRequest.username();
         uniqueUsernameValidator.validateUsername(username);
+
+        //Checking if the password is valid
+        String password = createUserRequest.password();
+        passwordValidator.validatePassword(password);
 
         Admin newAdmin = Admin.builder()
                 .name(createUserRequest.name())

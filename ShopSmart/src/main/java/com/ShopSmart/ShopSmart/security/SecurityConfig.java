@@ -22,10 +22,9 @@ public class SecurityConfig {
                 .headers(x -> x.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(x ->
-                                        x.requestMatchers("/ShopSmart/**").permitAll()
-//                        .requestMatchers("/ShopSmart/test/**").authenticated()
-//                        .requestMatchers("/ShopSmart/**").permitAll()
-//                        .requestMatchers("/ShopSmart/Admin/**").hasRole(Role.ROLE_ADMIN.getValue())
+                        x.requestMatchers("/ShopSmart/Admin/**").hasRole(Role.ROLE_ADMIN.getValue())
+                        .requestMatchers("/ShopSmart/**").permitAll()
+                        .requestMatchers("/ShopSmart/Admin/**").hasRole(Role.ROLE_ADMIN.getValue())
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults());

@@ -35,7 +35,7 @@ public class UserService {
 
     public User createUser(CreateUserRequest createUserRequest) throws UsernameNotUniqueException {
 
-        //Checking if that username is exist in database
+        //Checking if that username is existed in database
         String username = createUserRequest.username();
         uniqueUsernameValidator.validateUsername(username);
 
