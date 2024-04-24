@@ -7,10 +7,7 @@ import com.ShopSmart.ShopSmart.model.Merchant;
 import com.ShopSmart.ShopSmart.model.Product;
 import com.ShopSmart.ShopSmart.model.User;
 import com.ShopSmart.ShopSmart.service.MerchantService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/ShopSmart/Merchant")
@@ -20,6 +17,11 @@ public class MerchantController {
 
     public MerchantController(MerchantService merchantService) {
         this.merchantService = merchantService;
+    }
+
+    @GetMapping
+    public String test(){
+        return "Hello from Merchant Controller!";
     }
 
 
@@ -32,4 +34,8 @@ public class MerchantController {
     public Product addProduct(@RequestBody ProductRequest request){
         return merchantService.addProduct(request);
     }
-}
+
+    @DeleteMapping("/deleteProduct/{id}")
+    public void deleteProduct(@PathVariable("id") Long id){
+        merchantService.deleteProduct(id);
+    }}

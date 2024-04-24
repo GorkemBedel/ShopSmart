@@ -12,12 +12,14 @@ import com.ShopSmart.ShopSmart.repository.ProductRepository;
 import com.ShopSmart.ShopSmart.repository.UserRepository;
 import com.ShopSmart.ShopSmart.rules.PasswordValidator;
 import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class MerchantService {
@@ -65,9 +67,14 @@ public class MerchantService {
         return merchantRepository.save(newMerchant);
     }
 
+
     public Product addProduct(ProductRequest productRequest){
         Optional<Merchant> merchant = merchantRepository.findById(productRequest.merchantId());
 
+        if(merchant.isEmpty()){
+            throw new UsernameNotFoundException("There is no merchant with id: " + productRequest.merchantId());
+        }
+        System.out.println(merchant.get().getId());
 
         Product newProduct = Product.builder()
                 .merchant(merchant.get())
@@ -75,7 +82,32 @@ public class MerchantService {
                 .productName(productRequest.productName())
                 .build();
 
+        Set<Product> products = merchant.get().getProducts();
+        products.add(newProduct);
+        merchant.get().setProducts(products);
+
         return productRepository.save(newProduct);
+    }
+
+    public Product deleteProduct(Long productId){
+
+        Optional<Product> deletedProduct = productRepository.findByid(productId);
+        if(deletedProduct.isPresent()) {
+
+            //Productın sahibi olan merchant bulundu
+            Merchant merchant = deletedProduct.get().getMerchant();
+
+            //Merchantın products listesinden silindi
+            Set<Product> products = merchant.getProducts();
+            products.remove(deletedProduct.get());
+            merchant.setProducts(products);
+
+            //product repositoryden silindi
+            productRepository.delete(deletedProduct.get());
+        }
+        return deletedProduct.orElseThrow(() -> new UsernameNotFoundException("There is no product with id: "+productId));
+
+
     }
 
     public Optional<Merchant> getByMerchantName(String merchantName){

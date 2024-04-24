@@ -10,6 +10,7 @@ import com.ShopSmart.ShopSmart.repository.MerchantRepository;
 import com.ShopSmart.ShopSmart.repository.UserRepository;
 import com.ShopSmart.ShopSmart.rules.PasswordValidator;
 import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -75,6 +76,22 @@ public class AdminService {
 
     public List<Merchant> getAllMerchants() {
         return merchantRepository.findAll();
+    }
+
+    public User deleteUser(Long userId){
+        Optional<User> deletedUser = userRepository.findById(userId);
+        if(deletedUser.isPresent()) {
+            userRepository.delete(deletedUser.get());
+        }
+        return deletedUser.orElseThrow(() -> new UsernameNotFoundException("There is no user with id: " + userId));
+    }
+
+    public Merchant deleteMerchant(Long merchantId){
+        Optional<Merchant> deletedMerchant = merchantRepository.findById(merchantId);
+        if(deletedMerchant.isPresent()) {
+            merchantRepository.delete(deletedMerchant.get());
+        }
+        return deletedMerchant.orElseThrow(() -> new UsernameNotFoundException("There is no merchant with id: " + merchantId));
     }
 
 

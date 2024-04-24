@@ -48,9 +48,14 @@ public class AdminController {
         return adminService.getAllMerchants();
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteUser(@PathVariable("id") String id){
+    @DeleteMapping("/deleteUser/{id}")
+    public void deleteUser(@PathVariable("id") Long id){
+        adminService.deleteUser(id);
+    }
 
+    @DeleteMapping("/deleteMerchant/{id}")
+    public void deleteMerchant(@PathVariable("id") Long id){
+        adminService.deleteMerchant(id);
     }
 
 }

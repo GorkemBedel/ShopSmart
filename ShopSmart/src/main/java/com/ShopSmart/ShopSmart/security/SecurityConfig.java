@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
@@ -17,16 +19,23 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity security) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity security, HandlerMappingIntrospector introspector) throws Exception{
+
+        MvcRequestMatcher.Builder mvcRequestBuilder = new MvcRequestMatcher.Builder(introspector);
+
+
         security
                 .headers(x -> x.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .csrf(AbstractHttpConfigurer::disable)
+//                .csrf(csrfConfig -> csrfConfig.ignoringRequestMatchers(mvcRequestBuilder.pattern("/user/**")))
                 .authorizeHttpRequests(x ->
-                        x.requestMatchers("/ShopSmart/Admin/**").hasRole(Role.ROLE_ADMIN.getValue())
-                        .requestMatchers("/ShopSmart/**").permitAll()
-                        .requestMatchers("/ShopSmart/Admin/**").hasRole(Role.ROLE_ADMIN.getValue())
+                        x
+                                .requestMatchers(mvcRequestBuilder.pattern("/ShopSmart/User/**")).hasRole(Role.ROLE_USER.getValue())
+                                .requestMatchers(mvcRequestBuilder.pattern("/ShopSmart/Merchant/**")).hasRole(Role.ROLE_MERCHANT.getValue())
+                                .requestMatchers(mvcRequestBuilder.pattern("/ShopSmart/Admin/**")).hasRole(Role.ROLE_ADMIN.getValue())
+                                .anyRequest().authenticated()
                 )
-                .formLogin(AbstractHttpConfigurer::disable)
+                .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
 
         return security.build();
