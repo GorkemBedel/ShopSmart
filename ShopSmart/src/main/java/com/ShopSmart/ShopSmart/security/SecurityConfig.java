@@ -30,6 +30,8 @@ public class SecurityConfig {
 //                .csrf(csrfConfig -> csrfConfig.ignoringRequestMatchers(mvcRequestBuilder.pattern("/user/**")))
                 .authorizeHttpRequests(x ->
                         x
+                                .requestMatchers(mvcRequestBuilder.pattern("/ShopSmart/User/createUser/**")).permitAll()
+                                .requestMatchers(mvcRequestBuilder.pattern("/ShopSmart/Merchant/createMerchant/**")).permitAll()
                                 .requestMatchers(mvcRequestBuilder.pattern("/ShopSmart/User/**")).hasRole(Role.ROLE_USER.getValue())
                                 .requestMatchers(mvcRequestBuilder.pattern("/ShopSmart/Merchant/**")).hasRole(Role.ROLE_MERCHANT.getValue())
                                 .requestMatchers(mvcRequestBuilder.pattern("/ShopSmart/Admin/**")).hasRole(Role.ROLE_ADMIN.getValue())

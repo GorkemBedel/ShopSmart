@@ -4,6 +4,7 @@ package com.ShopSmart.ShopSmart.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Set;
 
@@ -19,10 +20,14 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String productName;
+    private String description;
     private Long productStock;
 
-    private Set<String> reviews;
+    //One product has many reviews
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private Set<Review> reviews;
 
+    //Many products belongs to one merchant
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ManyToOne

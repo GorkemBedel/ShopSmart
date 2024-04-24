@@ -3,6 +3,7 @@ package com.ShopSmart.ShopSmart.service;
 import com.ShopSmart.ShopSmart.dto.CreateMerchantRequest;
 import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
 import com.ShopSmart.ShopSmart.dto.ProductRequest;
+import com.ShopSmart.ShopSmart.exceptions.UnauthorizedException;
 import com.ShopSmart.ShopSmart.model.Merchant;
 import com.ShopSmart.ShopSmart.model.Product;
 import com.ShopSmart.ShopSmart.model.Role;
@@ -12,14 +13,16 @@ import com.ShopSmart.ShopSmart.repository.ProductRepository;
 import com.ShopSmart.ShopSmart.repository.UserRepository;
 import com.ShopSmart.ShopSmart.rules.PasswordValidator;
 import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class MerchantService {
@@ -69,33 +72,44 @@ public class MerchantService {
 
 
     public Product addProduct(ProductRequest productRequest){
-        Optional<Merchant> merchant = merchantRepository.findById(productRequest.merchantId());
 
-        if(merchant.isEmpty()){
-            throw new UsernameNotFoundException("There is no merchant with id: " + productRequest.merchantId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInMerchantUsername = authentication.getName();
+
+        //find current logged in merchant
+        Optional<Merchant> merchant = merchantRepository.findByusername(loggedInMerchantUsername);
+
+        if(merchant.isPresent()) {
+            Product newProduct = Product.builder()
+                    .merchant(merchant.get())
+                    .productStock(productRequest.productStock())
+                    .productName(productRequest.productName())
+                    .description(productRequest.productDescription())
+                    .build();
+
+            Set<Product> products = merchant.get().getProducts();
+            products.add(newProduct);
+            merchant.get().setProducts(products);
+            return productRepository.save(newProduct);
+        }else{
+            throw new UsernameNotFoundException("Merchant is not exist");
         }
-        System.out.println(merchant.get().getId());
 
-        Product newProduct = Product.builder()
-                .merchant(merchant.get())
-                .productStock(productRequest.productStock())
-                .productName(productRequest.productName())
-                .build();
-
-        Set<Product> products = merchant.get().getProducts();
-        products.add(newProduct);
-        merchant.get().setProducts(products);
-
-        return productRepository.save(newProduct);
     }
 
     public Product deleteProduct(Long productId){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInMerchantUsername = authentication.getName();
 
         Optional<Product> deletedProduct = productRepository.findByid(productId);
         if(deletedProduct.isPresent()) {
 
             //Productın sahibi olan merchant bulundu
             Merchant merchant = deletedProduct.get().getMerchant();
+            if(!merchant.getUsername().equals(loggedInMerchantUsername)){
+                throw new UnauthorizedException("You are trying to delete another merchant's product.");
+            }
 
             //Merchantın products listesinden silindi
             Set<Product> products = merchant.getProducts();
@@ -113,6 +127,50 @@ public class MerchantService {
     public Optional<Merchant> getByMerchantName(String merchantName){
         return merchantRepository.findByusername(merchantName);
     }
+
+    public List<Product> getAllProducts(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInMerchantUsername = authentication.getName();
+
+        //All products in database
+        List<Product> productList = productRepository.findAll();
+
+        //Just given merchants products
+        List<Product> merchantsProducts = new ArrayList<>();
+        for(Product p: productList){
+            if(p.getMerchant().getUsername().equals(loggedInMerchantUsername)){
+                merchantsProducts.add(p);
+            }
+        }
+
+        return merchantsProducts;
+
+    }
+
+    public Product updateProduct(Long productId, ProductRequest updateRequest){
+        Optional<Product> updatedProduct = productRepository.findByid(productId);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInMerchantUsername = authentication.getName();
+
+        if(updatedProduct.isPresent()){
+            // if updated products merchant is not the merchant who is logged in, throw exception
+            if(!updatedProduct.get().getMerchant().getUsername().equals(loggedInMerchantUsername)){
+                throw new UnauthorizedException("You are trying to update another merchant's product.");
+
+            }
+            updatedProduct.get().setProductName(updateRequest.productName());
+            updatedProduct.get().setProductStock(updateRequest.productStock());
+            updatedProduct.get().setDescription(updateRequest.productDescription());
+            return productRepository.save(updatedProduct.get());
+        } else {
+            throw new UsernameNotFoundException("Product Id not found");
+        }
+
+    }
+
+
 
 
 

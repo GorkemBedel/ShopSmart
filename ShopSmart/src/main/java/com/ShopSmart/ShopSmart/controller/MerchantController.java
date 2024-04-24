@@ -9,6 +9,8 @@ import com.ShopSmart.ShopSmart.model.User;
 import com.ShopSmart.ShopSmart.service.MerchantService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/ShopSmart/Merchant")
 public class MerchantController {
@@ -35,7 +37,17 @@ public class MerchantController {
         return merchantService.addProduct(request);
     }
 
-    @DeleteMapping("/deleteProduct/{id}")
-    public void deleteProduct(@PathVariable("id") Long id){
+    @GetMapping("/allProducts")
+    public List<Product> allProducts(){
+        return merchantService.getAllProducts();
+    }
+
+    @PutMapping("/updateProduct/{productId}")
+    public Product updateProduct(@PathVariable("productId") Long id, @RequestBody ProductRequest updateRequest){
+        return merchantService.updateProduct(id, updateRequest);
+    }
+
+    @DeleteMapping("/deleteProduct/{productId}")
+    public void deleteProduct(@PathVariable("productId") Long id){
         merchantService.deleteProduct(id);
     }}

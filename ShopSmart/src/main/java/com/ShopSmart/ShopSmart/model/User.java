@@ -33,6 +33,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role = Role.ROLE_USER;
 
+    //One user has many reviews
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Review> reviews;
+
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @JoinTable(name = "all_authorities", joinColumns = @JoinColumn(name = "username", referencedColumnName = "username"))
     @Column(name = "role", nullable = false)

@@ -13,6 +13,7 @@ import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -74,8 +75,16 @@ public class AdminService {
         return userRepository.findAll();
     }
 
+    public Optional<User> findByUsername(String username){
+        return userRepository.findByusername(username);
+    }
+
     public List<Merchant> getAllMerchants() {
         return merchantRepository.findAll();
+    }
+
+    public Optional<Merchant> findByMerchantUsername(String username){
+        return merchantRepository.findByusername(username);
     }
 
     public User deleteUser(Long userId){

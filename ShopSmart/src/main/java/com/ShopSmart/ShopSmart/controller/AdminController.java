@@ -11,22 +11,17 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/ShopSmart/Admin")
 public class AdminController {
 
     private final AdminService adminService;
-    private final UserService userService;
-    private final MerchantService merchantService;
 
-    public AdminController(AdminService adminService, UserService userService, MerchantService merchantService) {
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
-        this.userService = userService;
-        this.merchantService = merchantService;
     }
-
-
 
     @GetMapping("/test")
     public String helloWorldPublic(){
@@ -34,7 +29,7 @@ public class AdminController {
     }
 
     @PostMapping("/createAdmin")
-    public Admin createUser(@RequestBody CreateUserRequest request){
+    public Admin createAdmin(@RequestBody CreateUserRequest request){
         return adminService.createAdmin(request);
     }
 
@@ -47,6 +42,27 @@ public class AdminController {
     public List<Merchant> getMerchants() {
         return adminService.getAllMerchants();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/findByUsername/{username}")
+    public Optional<User> findByUsername(@PathVariable("username") String username){
+        return adminService.findByUsername(username);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/findByMerchantUsername/{MerchantUsername}")
+    public Optional<Merchant> findByMerchantUsername(@PathVariable("MerchantUsername") String username){
+        return adminService.findByMerchantUsername(username);
+    }
+
+//    @PostMapping("/createUser")
+//    public User createUser(@RequestBody CreateUserRequest request){
+//        return adminService.createUser(request);
+//    }
+//    @PutMapping("/updateUser/{id}")
+//    public List<User> updateUser(@PathVariable("id") String id, @RequestBody CreateUserRequest request){
+//        return adminService.updateUser(id, request);
+//    }
 
     @DeleteMapping("/deleteUser/{id}")
     public void deleteUser(@PathVariable("id") Long id){
