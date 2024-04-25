@@ -54,21 +54,14 @@ public class UserController {
 
 
 
-    @GetMapping("/findByMerchantUsername/{username}")
-    public RestrictedMerchantRequest findByMerchantUsername(@PathVariable("username") String username){
-        return userService.getByMerchantUsername(username);
-    }
-
-
     //************************************** C R U D   FOR   REVIEW ****************************************************
     @PostMapping("/review")
     public Review review(@RequestBody ReviewRequest request){
 
         Long productId = request.productId();
-        Long userId = request.userId();
         String reviewToPost = request.review();
 
-        return userService.reviewProduct(productId, userId, reviewToPost);
+        return userService.reviewProduct(productId, reviewToPost);
     }
 
     @PutMapping("/updateReview/{reviewId}")
@@ -82,6 +75,12 @@ public class UserController {
         return userService.deleteReview(id);
     }
     //******************************************************************************************************************
+
+
+    @GetMapping("/findByMerchantUsername/{username}")
+    public RestrictedMerchantRequest findByMerchantUsername(@PathVariable("username") String username){
+        return userService.getByMerchantUsername(username);
+    }
 
 
 

@@ -5,6 +5,7 @@ import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
 import com.ShopSmart.ShopSmart.dto.ProductRequest;
 import com.ShopSmart.ShopSmart.model.Merchant;
 import com.ShopSmart.ShopSmart.model.Product;
+import com.ShopSmart.ShopSmart.model.Review;
 import com.ShopSmart.ShopSmart.model.User;
 import com.ShopSmart.ShopSmart.service.MerchantService;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,9 @@ public class MerchantController {
     //******************************************************************************************************************
 
 
+
+
+    //****************************** C R U D     FOR    PRODUCT*********************************************************
     @PostMapping("/addProduct")
     public Product addProduct(@RequestBody ProductRequest request){
         return merchantService.addProduct(request);
@@ -58,4 +62,15 @@ public class MerchantController {
     @DeleteMapping("/deleteProduct/{productId}")
     public Product deleteProduct(@PathVariable("productId") Long id){
         return merchantService.deleteProduct(id);
-    }}
+    }
+    //******************************************************************************************************************
+
+
+
+    //****************************** DELETE     FOR     REVIEW**********************************************************
+    @DeleteMapping("/deleteReview/{reviewId}")
+    public Review deleteReview(@PathVariable("reviewId") Long id){
+        return merchantService.deleteReview(id);
+    }
+    //******************************************************************************************************************
+}

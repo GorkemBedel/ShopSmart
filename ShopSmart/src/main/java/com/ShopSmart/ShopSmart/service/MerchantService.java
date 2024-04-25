@@ -4,12 +4,11 @@ import com.ShopSmart.ShopSmart.dto.CreateMerchantRequest;
 import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
 import com.ShopSmart.ShopSmart.dto.ProductRequest;
 import com.ShopSmart.ShopSmart.exceptions.UnauthorizedException;
-import com.ShopSmart.ShopSmart.model.Merchant;
-import com.ShopSmart.ShopSmart.model.Product;
-import com.ShopSmart.ShopSmart.model.Role;
-import com.ShopSmart.ShopSmart.model.User;
+import com.ShopSmart.ShopSmart.exceptions.UsernameNotUniqueException;
+import com.ShopSmart.ShopSmart.model.*;
 import com.ShopSmart.ShopSmart.repository.MerchantRepository;
 import com.ShopSmart.ShopSmart.repository.ProductRepository;
+import com.ShopSmart.ShopSmart.repository.ReviewRepository;
 import com.ShopSmart.ShopSmart.repository.UserRepository;
 import com.ShopSmart.ShopSmart.rules.PasswordValidator;
 import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
@@ -29,18 +28,20 @@ public class MerchantService {
 
     private final MerchantRepository merchantRepository;
     private final ProductRepository productRepository;
+    private final ReviewRepository reviewRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UniqueUsernameValidator uniqueUsernameValidator;
     private final PasswordValidator passwordValidator;
 
     public MerchantService(MerchantRepository merchantRepository, ProductRepository productRepository
                         ,BCryptPasswordEncoder bCryptPasswordEncoder, UniqueUsernameValidator uniqueUsernameValidator
-                        ,PasswordValidator passwordValidator) {
+                        ,PasswordValidator passwordValidator, ReviewRepository reviewRepository) {
         this.merchantRepository = merchantRepository;
         this.productRepository = productRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.uniqueUsernameValidator = uniqueUsernameValidator;
         this.passwordValidator = passwordValidator;
+        this.reviewRepository = reviewRepository;
     }
 
     public Merchant createMerchant(CreateMerchantRequest createMerchantRequest){
@@ -78,6 +79,10 @@ public class MerchantService {
 
         //find current logged in merchant
         Optional<Merchant> merchant = merchantRepository.findByusername(loggedInMerchantUsername);
+
+        if(productRequest.productPrice() <= 0){
+            throw new UsernameNotFoundException("Price should be more then 0!");
+        }
 
         if(merchant.isPresent()) {
             Product newProduct = Product.builder()
@@ -155,8 +160,12 @@ public class MerchantService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInMerchantUsername = authentication.getName();
 
+        if(updateRequest.productPrice() <= 0){
+            throw new UsernameNotUniqueException("Price should be more then 0!");
+        }
+
         if(updatedProduct.isPresent()){
-            // if updated products merchant is not the merchant who is logged in, throw exception
+            // if updated product's merchant is not the merchant who is logged in, throw exception
             if(!updatedProduct.get().getMerchant().getUsername().equals(loggedInMerchantUsername)){
                 throw new UnauthorizedException("You are trying to update another merchant's product.");
 
@@ -164,9 +173,10 @@ public class MerchantService {
             updatedProduct.get().setProductName(updateRequest.productName());
             updatedProduct.get().setProductStock(updateRequest.productStock());
             updatedProduct.get().setDescription(updateRequest.productDescription());
+            updatedProduct.get().setProductPrice(updateRequest.productPrice());
             return productRepository.save(updatedProduct.get());
         } else {
-            throw new UsernameNotFoundException("Product Id not found");
+            throw new UsernameNotUniqueException("Product Id not found");
         }
 
     }
@@ -188,6 +198,26 @@ public class MerchantService {
     }
 
 
+    public Review deleteReview(Long id) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = authentication.getName();
 
+        Optional<Merchant> merchantOptional = merchantRepository.findByusername(loggedInUsername);
+        Optional<Review> reviewOptional = reviewRepository.findById(id);
+
+        if (merchantOptional.isPresent() && reviewOptional.isPresent()) {
+
+            //review yapılan ürünün sahibi olan merchant ile logged in olan merchant aynı mı onu karşılaştırıyoruz
+            Merchant ownerOfTheReviewedProduct = reviewOptional.get().getProduct().getMerchant();
+            if(!ownerOfTheReviewedProduct.getUsername().equals(loggedInUsername)){
+                throw new UsernameNotUniqueException("You are trying to delete another merchant's review!");
+            }
+            reviewRepository.delete(reviewOptional.get());
+            return reviewOptional.get();
+
+        } else {
+            throw new UsernameNotUniqueException("There is no review with id: "+ id);
+        }
+    }
 }

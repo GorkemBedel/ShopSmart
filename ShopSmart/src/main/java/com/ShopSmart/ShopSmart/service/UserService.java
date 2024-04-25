@@ -102,13 +102,14 @@ public class UserService {
         }
     }
 
-    public Review reviewProduct(Long productId, Long userId, String reviewToPost){
+    public Review reviewProduct(Long productId, String reviewToPost){
         Optional<Product> reviewedProduct = productRepository.findById(productId);
-        Optional<User> reviewedUser = userRepository.findById(userId);
 
         //Authentication check
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInUsername = authentication.getName();
+
+        Optional<User> reviewedUser = userRepository.findByusername(loggedInUsername);
 
 
 
