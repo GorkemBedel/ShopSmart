@@ -22,6 +22,8 @@ public class Product {
     private String productName;
     private String description;
     private Long productStock;
+    private Double productPrice;
+
 
     //One product has many reviews
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

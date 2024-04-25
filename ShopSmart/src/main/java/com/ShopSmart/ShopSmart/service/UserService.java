@@ -184,7 +184,8 @@ public class UserService {
                 throw new UnauthorizedException("You are trying to update another user's informations.");
             }
             updatedUser.get().setName(request.name());
-            updatedUser.get().setPassword(request.password());
+            updatedUser.get().setPassword(bCryptPasswordEncoder.encode(request.password()));
+
             return userRepository.save(updatedUser.get());
         }else {
             throw new UsernameNotFoundException("Product Id not found");
@@ -192,6 +193,45 @@ public class UserService {
     }
 
 
+    public Review deleteReview(Long reviewId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = authentication.getName();
+
+        Optional<Review> deletedReview = reviewRepository.findById(reviewId);
+        if(deletedReview.isPresent()) {
+
+            //Reviewın sahibi user
+            User user = deletedReview.get().getUser();
+            if(!user.getUsername().equals(loggedInUsername)){
+                throw new UnauthorizedException("You are trying to delete another user's review.");
+            }
+
+            //Userın review listesinden silindi
+            Set<Review> reviews = user.getReviews();
+            reviews.remove(deletedReview.get());
+            user.setReviews(reviews);
+
+            //review repositoryden silindi
+            reviewRepository.delete(deletedReview.get());
+        }
+        return deletedReview.orElseThrow(() -> new UsernameNotUniqueException("There is no review with id: "+reviewId));
+    }
 
 
+    public User deleteUser(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = authentication.getName();
+
+        Optional<User> userOptional = userRepository.findByusername(loggedInUsername);
+        if (userOptional.isPresent()) {
+            User deletedUser = userOptional.get();
+            userRepository.delete(deletedUser);
+            return deletedUser;
+        } else {
+            throw new UsernameNotFoundException("Deleted user can not be found");
+        }
+
+    }
 }

@@ -29,28 +29,38 @@ public class UserController {
         return "Test parametre = " + testParam;
     }
 
+
+    //**************************************** C R U D    FOR   USER **********************************************
     @PostMapping("/createUser")
     public User createUser(@RequestBody CreateUserRequest request){
         return userService.createUser(request);
+    }
+
+    //It only shows the name and reviews of the searched user.
+    @GetMapping("/findByUserUsername/{username}")
+    public RestrictedUserRequest findByUsername(@PathVariable("username") String username){
+        return userService.getByUserUsername(username);
     }
     @PutMapping("/updateUser/{userId}")
     public User updateUser(@PathVariable("userId") Long id, @RequestBody CreateUserRequest request){
         return userService.updateUser(id, request);
     }
 
-    //It only shows the name and reviews of the searched user.
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/findByUserUsername/{username}")
-    public RestrictedUserRequest findByUsername(@PathVariable("username") String username){
-        return userService.getByUserUsername(username);
+    @DeleteMapping("/deleteOwnAccount")
+    public User deleteOwnAccount(){
+        return userService.deleteUser();
     }
+    //******************************************************************************************************************
 
-    @PreAuthorize("hasRole('USER')")
+
+
     @GetMapping("/findByMerchantUsername/{username}")
     public RestrictedMerchantRequest findByMerchantUsername(@PathVariable("username") String username){
         return userService.getByMerchantUsername(username);
     }
 
+
+    //************************************** C R U D   FOR   REVIEW ****************************************************
     @PostMapping("/review")
     public Review review(@RequestBody ReviewRequest request){
 
@@ -61,12 +71,17 @@ public class UserController {
         return userService.reviewProduct(productId, userId, reviewToPost);
     }
 
-
     @PutMapping("/updateReview/{reviewId}")
     public Review updateReview(@PathVariable("reviewId") Long reviewId
             ,@RequestBody ReviewRequest request){
         return userService.updateReview(reviewId, request);
     }
+
+    @DeleteMapping("/deleteReview/{reviewId}")
+    public Review deleteReview(@PathVariable("reviewId") Long id){
+        return userService.deleteReview(id);
+    }
+    //******************************************************************************************************************
 
 
 

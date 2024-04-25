@@ -4,6 +4,8 @@ public record ProductRequest(
         Long merchantId,
         String productName,
         Long productStock,
-        String productDescription
+        String productDescription,
+        Double productPrice
+
 ) {
 }

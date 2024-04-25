@@ -27,10 +27,18 @@ public class MerchantController {
     }
 
 
+    //****************************** C R U D     FOR    MERCHANT********************************************************
     @PostMapping("/createMerchant")
     public Merchant createMerchant(@RequestBody CreateMerchantRequest request){
         return merchantService.createMerchant(request);
     }
+
+    @DeleteMapping("/deleteOwnAccount")
+    public Merchant deleteOwnAccount(){
+        return merchantService.deleteMerchant();
+    }
+    //******************************************************************************************************************
+
 
     @PostMapping("/addProduct")
     public Product addProduct(@RequestBody ProductRequest request){
@@ -48,6 +56,6 @@ public class MerchantController {
     }
 
     @DeleteMapping("/deleteProduct/{productId}")
-    public void deleteProduct(@PathVariable("productId") Long id){
-        merchantService.deleteProduct(id);
+    public Product deleteProduct(@PathVariable("productId") Long id){
+        return merchantService.deleteProduct(id);
     }}

@@ -1,5 +1,6 @@
 package com.ShopSmart.ShopSmart.controller;
 
+import com.ShopSmart.ShopSmart.dto.CreateMerchantRequest;
 import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
 import com.ShopSmart.ShopSmart.model.Admin;
 import com.ShopSmart.ShopSmart.model.Merchant;
@@ -28,9 +29,39 @@ public class AdminController {
         return "Hello world from Admin Panel";
     }
 
+
+    //**************************************** C R U D    FOR    ADMIN *************************************************
     @PostMapping("/createAdmin")
     public Admin createAdmin(@RequestBody CreateUserRequest request){
         return adminService.createAdmin(request);
+    }
+
+    @GetMapping("/GetAdmins")
+    public List<Admin> getAdmins(){
+        return adminService.getAllAdmins();
+    }
+
+    @PutMapping("/updateAdmin/{adminId}")
+    public Admin updateAdmin(@PathVariable("adminId") Long id, @RequestBody CreateUserRequest request){
+        return adminService.updateAdmin(id, request);
+    }
+
+    @DeleteMapping("/deleteAdmin/{adminId}")
+    public Admin deleteAdmin(@PathVariable("adminId") Long id){
+        return adminService.deleteAdmin(id);
+    }
+    //******************************************************************************************************************
+
+
+
+    //****************************************** C R U D   FOR   USER **************************************************
+    @PostMapping("/createUser")
+    public User createUser(@RequestBody CreateUserRequest request){
+        return adminService.createUser(request);
+    }
+    @GetMapping("/findByUsername/{username}")
+    public Optional<User> findByUsername(@PathVariable("username") String username){
+        return adminService.findByUsername(username);
     }
 
     @GetMapping("/GetUsers")
@@ -38,40 +69,48 @@ public class AdminController {
         return adminService.getAllUsers();
     }
 
-    @GetMapping("/GetMerchants")
-    public List<Merchant> getMerchants() {
-        return adminService.getAllMerchants();
+    @PutMapping("/updateUser/{userId}")
+    public User updateUser(@PathVariable("userId") Long id, @RequestBody CreateUserRequest request){
+        return adminService.updateUser(id, request);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/findByUsername/{username}")
-    public Optional<User> findByUsername(@PathVariable("username") String username){
-        return adminService.findByUsername(username);
+    @DeleteMapping("/deleteUser/{id}")
+    public void deleteUser(@PathVariable("id") Long id){
+        adminService.deleteUser(id);
     }
+    //******************************************************************************************************************
 
-    @PreAuthorize("hasRole('ADMIN')")
+
+
+
+
+    //***************************************** C R U D    FOR    MERCHANT**********************************************
+    @PostMapping("/createMerchant")
+    public Merchant createMerchant(@RequestBody CreateMerchantRequest request){
+        return adminService.createMerchant(request);
+    }
     @GetMapping("/findByMerchantUsername/{MerchantUsername}")
     public Optional<Merchant> findByMerchantUsername(@PathVariable("MerchantUsername") String username){
         return adminService.findByMerchantUsername(username);
     }
 
-//    @PostMapping("/createUser")
-//    public User createUser(@RequestBody CreateUserRequest request){
-//        return adminService.createUser(request);
-//    }
-//    @PutMapping("/updateUser/{id}")
-//    public List<User> updateUser(@PathVariable("id") String id, @RequestBody CreateUserRequest request){
-//        return adminService.updateUser(id, request);
-//    }
+    @GetMapping("/GetMerchants")
+    public List<Merchant> getMerchants() {
+        return adminService.getAllMerchants();
+    }
 
-    @DeleteMapping("/deleteUser/{id}")
-    public void deleteUser(@PathVariable("id") Long id){
-        adminService.deleteUser(id);
+    @PutMapping("/updateMerchant/{merchantId}")
+    public Merchant updateMerchant(@PathVariable("merchantId") Long id, @RequestBody CreateMerchantRequest request){
+        return adminService.updateMerchant(id, request);
     }
 
     @DeleteMapping("/deleteMerchant/{id}")
     public void deleteMerchant(@PathVariable("id") Long id){
         adminService.deleteMerchant(id);
     }
+    //******************************************************************************************************************
+
+
+
 
 }

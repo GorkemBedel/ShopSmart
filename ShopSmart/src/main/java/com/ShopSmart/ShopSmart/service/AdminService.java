@@ -1,6 +1,8 @@
 package com.ShopSmart.ShopSmart.service;
 
+import com.ShopSmart.ShopSmart.dto.CreateMerchantRequest;
 import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
+import com.ShopSmart.ShopSmart.exceptions.UnauthorizedException;
 import com.ShopSmart.ShopSmart.model.Admin;
 import com.ShopSmart.ShopSmart.model.Merchant;
 import com.ShopSmart.ShopSmart.model.Role;
@@ -10,6 +12,8 @@ import com.ShopSmart.ShopSmart.repository.MerchantRepository;
 import com.ShopSmart.ShopSmart.repository.UserRepository;
 import com.ShopSmart.ShopSmart.rules.PasswordValidator;
 import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -104,8 +108,112 @@ public class AdminService {
     }
 
 
+    public User createUser(CreateUserRequest createUserRequest) {
+
+        //Checking if that username is existed in database
+        String username = createUserRequest.username();
+        uniqueUsernameValidator.validateUsername(username);
+
+        //Checking if the password is valid
+        String password = createUserRequest.password();
+        passwordValidator.validatePassword(password);
 
 
 
+        User newUser = User.builder()
+                .name(createUserRequest.name())
+                .username(createUserRequest.username())
+                .password(bCryptPasswordEncoder.encode(createUserRequest.password()))
+                .role(Role.ROLE_USER)
+                .authorities(new HashSet<>(List.of(Role.ROLE_USER)))
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .isEnabled(true)
+                .build();
 
+        return userRepository.save(newUser);
+
+    }
+
+    public User updateUser(Long userId, CreateUserRequest request) {
+        Optional<User> updatedUser = userRepository.findById(userId);
+
+
+        if(updatedUser.isPresent() ){
+            updatedUser.get().setName(request.name());
+            updatedUser.get().setPassword(request.password());
+            return userRepository.save(updatedUser.get());
+        }else {
+            throw new UsernameNotFoundException("User Id not found");
+        }
+    }
+
+    public Merchant createMerchant(CreateMerchantRequest createMerchantRequest) {
+
+        //Checking if that username is exist in database
+        String username = createMerchantRequest.username();
+        uniqueUsernameValidator.validateUsername(username);
+
+        //Checking if the password is valid
+        String password = createMerchantRequest.password();
+        passwordValidator.validatePassword(password);
+
+        Merchant newMerchant = Merchant.builder()
+                .name(createMerchantRequest.name())
+                .username(createMerchantRequest.username())
+                .password(bCryptPasswordEncoder.encode(createMerchantRequest.password()))
+                .role(Role.ROLE_MERCHANT)
+                .authorities(new HashSet<>(List.of(Role.ROLE_MERCHANT)))
+                .companyName(createMerchantRequest.companyName())
+                .taxNumber(createMerchantRequest.taxNumber())
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .isEnabled(true)
+                .build();
+
+        return merchantRepository.save(newMerchant);
+    }
+
+    public Merchant updateMerchant(Long id, CreateMerchantRequest request) {
+        Optional<Merchant> updatedMerchant = merchantRepository.findById(id);
+
+
+        if(updatedMerchant.isPresent() ){
+            updatedMerchant.get().setName(request.name());
+            updatedMerchant.get().setPassword(request.password());
+            updatedMerchant.get().setCompanyName(request.companyName());
+            updatedMerchant.get().setTaxNumber(request.taxNumber());
+
+            return merchantRepository.save(updatedMerchant.get());
+        }else {
+            throw new UsernameNotFoundException("Merchant Id not found");
+        }
+    }
+
+    public List<Admin> getAllAdmins() {
+        return adminRepository.findAll();
+    }
+
+    public Admin deleteAdmin(Long id) {
+        Optional<Admin> deletedAdmin = adminRepository.findById(id);
+        if(deletedAdmin.isPresent()) {
+            adminRepository.delete(deletedAdmin.get());
+        }
+        return deletedAdmin.orElseThrow(() -> new UsernameNotFoundException("There is no admin with id: " + id));
+    }
+
+    public Admin updateAdmin(Long id, CreateUserRequest request) {
+        Optional<Admin> updatedAdmin = adminRepository.findById(id);
+
+
+        if(updatedAdmin.isPresent() ){
+            updatedAdmin.get().setName(request.name());
+            updatedAdmin.get().setPassword(request.password());
+            return adminRepository.save(updatedAdmin.get());
+        }else {
+            throw new UsernameNotFoundException("Admin Id not found");
+        }
+    }
 }

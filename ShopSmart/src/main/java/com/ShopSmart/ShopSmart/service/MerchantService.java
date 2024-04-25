@@ -85,6 +85,7 @@ public class MerchantService {
                     .productStock(productRequest.productStock())
                     .productName(productRequest.productName())
                     .description(productRequest.productDescription())
+                    .productPrice(productRequest.productPrice())
                     .build();
 
             Set<Product> products = merchant.get().getProducts();
@@ -170,7 +171,21 @@ public class MerchantService {
 
     }
 
+    public Merchant deleteMerchant(){
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = authentication.getName();
+
+        Optional<Merchant> merchantOptional = merchantRepository.findByusername(loggedInUsername);
+        if (merchantOptional.isPresent()) {
+            Merchant deletedMerchant = merchantOptional.get();
+            merchantRepository.delete(deletedMerchant);
+            return deletedMerchant;
+        } else {
+            throw new UsernameNotFoundException("Deleted merchant can not be found");
+        }
+
+    }
 
 
 
