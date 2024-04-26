@@ -18,8 +18,8 @@ public class PasswordValidator {
 
         if (password.isEmpty()) {
             throw new EmptyPasswordException("Password can not be empty!");
-        } else if (password.length() < 8) {
-            throw new NonValidPasswordException("Your password is not valid. It's lenght should be minimum 8");
+        } else if (password.length() < 8 || password.length() > 15) {
+            throw new NonValidPasswordException("Your password is not valid. It's lenght should be between 8 and 15");
         }
     }
 }

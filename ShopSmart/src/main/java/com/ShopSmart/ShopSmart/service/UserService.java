@@ -73,8 +73,7 @@ public class UserService {
     public RestrictedUserRequest getByUserUsername(String userName){
         Optional<User> user = userRepository.findByusername(userName);
         if(user.isPresent()){
-            RestrictedUserRequest request = new RestrictedUserRequest(user.get().getName());
-            return request;
+            return new RestrictedUserRequest(user.get().getName(), user.get().getReviews());
         }else {
             throw new UsernameNotFoundException("User not found");
         }

@@ -9,10 +9,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
-//    @Override
-//    protected ResponseEntity<Object> handleMethodArgumentNotValid(){
-//
-//    }
 
     @ExceptionHandler(UsernameNotUniqueException.class)
     public ResponseEntity<?> UsernameNotUniqueExceptionHandler(UsernameNotUniqueException exception){

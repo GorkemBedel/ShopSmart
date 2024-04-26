@@ -24,6 +24,7 @@ public class Merchant implements UserDetails {
     private String name;
     private String username;
     private String password;
+
     private String companyName;
     private String taxNumber;
 
