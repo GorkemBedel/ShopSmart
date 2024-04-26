@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -28,6 +29,9 @@ public class Product {
     //One product has many reviews
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private Set<Review> reviews;
+
+//    @ManyToMany(mappedBy = "products")
+//    private Set<Box> boxes = new HashSet<>();
 
     //Many products belongs to one merchant
     @JsonIgnore

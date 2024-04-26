@@ -4,6 +4,7 @@ import com.ShopSmart.ShopSmart.dto.CreateMerchantRequest;
 import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
 import com.ShopSmart.ShopSmart.model.Admin;
 import com.ShopSmart.ShopSmart.model.Merchant;
+import com.ShopSmart.ShopSmart.model.Review;
 import com.ShopSmart.ShopSmart.model.User;
 import com.ShopSmart.ShopSmart.service.AdminService;
 import com.ShopSmart.ShopSmart.service.MerchantService;
@@ -75,8 +76,8 @@ public class AdminController {
     }
 
     @DeleteMapping("/deleteUser/{id}")
-    public void deleteUser(@PathVariable("id") Long id){
-        adminService.deleteUser(id);
+    public User deleteUser(@PathVariable("id") Long id){
+        return adminService.deleteUser(id);
     }
     //******************************************************************************************************************
 
@@ -105,14 +106,15 @@ public class AdminController {
     }
 
     @DeleteMapping("/deleteMerchant/{id}")
-    public void deleteMerchant(@PathVariable("id") Long id){
-        adminService.deleteMerchant(id);
+    public Merchant deleteMerchant(@PathVariable("id") Long id){return adminService.deleteMerchant(id);
     }
     //******************************************************************************************************************
 
 
     //***************************************** C R U D    FOR    REVIEW************************************************
-
+    @DeleteMapping("/deleteReview/{reviewId}")
+    public Review deleteReview(@PathVariable("reviewId") Long id){return adminService.deleteReview(id);
+    }
     //******************************************************************************************************************
 
 

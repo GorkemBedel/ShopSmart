@@ -5,10 +5,7 @@ import com.ShopSmart.ShopSmart.exceptions.EmptyPasswordException;
 import com.ShopSmart.ShopSmart.exceptions.UnauthorizedException;
 import com.ShopSmart.ShopSmart.exceptions.UsernameNotUniqueException;
 import com.ShopSmart.ShopSmart.model.*;
-import com.ShopSmart.ShopSmart.repository.MerchantRepository;
-import com.ShopSmart.ShopSmart.repository.ProductRepository;
-import com.ShopSmart.ShopSmart.repository.ReviewRepository;
-import com.ShopSmart.ShopSmart.repository.UserRepository;
+import com.ShopSmart.ShopSmart.repository.*;
 import com.ShopSmart.ShopSmart.rules.PasswordValidator;
 import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
 import org.springframework.security.core.Authentication;
@@ -17,10 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -224,8 +218,8 @@ public class UserService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInUsername = authentication.getName();
-
         Optional<User> userOptional = userRepository.findByusername(loggedInUsername);
+
         if (userOptional.isPresent()) {
             User deletedUser = userOptional.get();
             userRepository.delete(deletedUser);
@@ -233,6 +227,34 @@ public class UserService {
         } else {
             throw new UsernameNotFoundException("Deleted user can not be found");
         }
-
     }
+
+//    public Product addBox(Long productId){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String loggedInUsername = authentication.getName();
+//        Optional<User> userOptional = userRepository.findByusername(loggedInUsername);
+//
+//        Optional<Product> productOptional = productRepository.findById(productId);
+//
+//        if (userOptional.isPresent() && productOptional.isPresent()) {
+//
+//            Box box = userOptional.get().getBox();
+//            if (box == null) {
+//                box = Box.builder()
+//                        .products(new HashSet<>())
+//                        .user(userOptional.get())
+//                        .build();
+//                userOptional.get().setBox(box);
+//            }
+//
+//            box.getProducts().add(productOptional.get());
+//            boxRepository.save(box);
+//            userRepository.save(userOptional.get()); // Kullanıcı nesnesini güncelle
+//
+//
+//            return productOptional.get();
+//        }else{
+//            throw new UsernameNotUniqueException("There is no product with id: " + productId);
+//        }
+//    }
 }

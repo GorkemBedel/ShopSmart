@@ -2,13 +2,13 @@ package com.ShopSmart.ShopSmart.service;
 
 import com.ShopSmart.ShopSmart.dto.CreateMerchantRequest;
 import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
+import com.ShopSmart.ShopSmart.dto.ReviewRequest;
 import com.ShopSmart.ShopSmart.exceptions.UnauthorizedException;
-import com.ShopSmart.ShopSmart.model.Admin;
-import com.ShopSmart.ShopSmart.model.Merchant;
-import com.ShopSmart.ShopSmart.model.Role;
-import com.ShopSmart.ShopSmart.model.User;
+import com.ShopSmart.ShopSmart.exceptions.UsernameNotUniqueException;
+import com.ShopSmart.ShopSmart.model.*;
 import com.ShopSmart.ShopSmart.repository.AdminRepository;
 import com.ShopSmart.ShopSmart.repository.MerchantRepository;
+import com.ShopSmart.ShopSmart.repository.ReviewRepository;
 import com.ShopSmart.ShopSmart.repository.UserRepository;
 import com.ShopSmart.ShopSmart.rules.PasswordValidator;
 import com.ShopSmart.ShopSmart.rules.UniqueUsernameValidator;
@@ -29,6 +29,7 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final UserRepository userRepository;
     private final MerchantRepository merchantRepository;
+    private final ReviewRepository reviewRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UniqueUsernameValidator uniqueUsernameValidator;
     private final PasswordValidator passwordValidator;
@@ -37,13 +38,14 @@ public class AdminService {
     public AdminService(AdminRepository adminRepository, UserRepository userRepository
                         , MerchantRepository merchantRepository
                         , BCryptPasswordEncoder bCryptPasswordEncoder, UniqueUsernameValidator uniqueUsernameValidator
-                        , PasswordValidator passwordValidator) {
+                        , PasswordValidator passwordValidator, ReviewRepository reviewRepository) {
         this.adminRepository = adminRepository;
         this.userRepository = userRepository;
         this.merchantRepository = merchantRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.uniqueUsernameValidator = uniqueUsernameValidator;
         this.passwordValidator = passwordValidator;
+        this.reviewRepository = reviewRepository;
     }
 
     public Admin createAdmin(CreateUserRequest createUserRequest){
@@ -216,4 +218,20 @@ public class AdminService {
             throw new UsernameNotFoundException("Admin Id not found");
         }
     }
+
+    public Review deleteReview(Long id) {
+        Optional<Review> reviewOptional = reviewRepository.findById(id);
+
+        if (reviewOptional.isPresent()) {
+            Merchant ownerOfTheReviewedProduct = reviewOptional.get().getProduct().getMerchant();
+            reviewRepository.delete(reviewOptional.get());
+            return reviewOptional.get();
+
+        } else {
+            throw new UsernameNotUniqueException("There is no review with id: " + id);
+        }
+    }
+
+
+
 }

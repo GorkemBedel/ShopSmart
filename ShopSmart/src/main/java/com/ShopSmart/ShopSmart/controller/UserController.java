@@ -4,6 +4,7 @@ import com.ShopSmart.ShopSmart.dto.CreateUserRequest;
 import com.ShopSmart.ShopSmart.dto.RestrictedMerchantRequest;
 import com.ShopSmart.ShopSmart.dto.RestrictedUserRequest;
 import com.ShopSmart.ShopSmart.dto.ReviewRequest;
+import com.ShopSmart.ShopSmart.model.Product;
 import com.ShopSmart.ShopSmart.model.Review;
 import com.ShopSmart.ShopSmart.model.User;
 import com.ShopSmart.ShopSmart.service.UserService;
@@ -82,6 +83,10 @@ public class UserController {
         return userService.getByMerchantUsername(username);
     }
 
+//    @PostMapping("/addToBox/{productId}")
+//    public Product addBox(@PathVariable("productId") Long id){
+//        return userService.addBox(id);
+//    }
 
 
 }

@@ -1,5 +1,7 @@
 package com.ShopSmart.ShopSmart.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +38,10 @@ public class User implements UserDetails {
     //One user has many reviews
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Review> reviews;
+
+//    @JsonManagedReference
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Box box;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @JoinTable(name = "all_authorities", joinColumns = @JoinColumn(name = "username", referencedColumnName = "username"))
