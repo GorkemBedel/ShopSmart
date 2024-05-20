@@ -81,7 +81,7 @@ public class AdminService {
         return userRepository.findAll();
     }
 
-    public Optional<User> findByUsername(String username){
+    public Optional<User> findUserByUsername(String username){
         return userRepository.findByusername(username);
     }
 

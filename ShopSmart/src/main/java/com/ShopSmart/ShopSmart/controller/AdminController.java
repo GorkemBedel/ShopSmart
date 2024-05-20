@@ -62,7 +62,7 @@ public class AdminController {
     }
     @GetMapping("/findByUsername/{username}")
     public Optional<User> findByUsername(@PathVariable("username") String username){
-        return adminService.findByUsername(username);
+        return adminService.findUserByUsername(username);
     }
 
     @GetMapping("/GetUsers")

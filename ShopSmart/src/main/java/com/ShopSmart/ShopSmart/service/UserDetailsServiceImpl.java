@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = adminService.findByUsername(username);
+        Optional<User> user = adminService.findUserByUsername(username);
         Optional<Merchant> merchant = merchantService.getByMerchantName(username);
         Optional<Admin> admin = adminService.getByAdminName(username);
 
